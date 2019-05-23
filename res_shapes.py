@@ -357,7 +357,7 @@ def quarterwave_inverted(w, gap, nturns, lcap, lmeander, r, tail=True, ltail=100
                 fine += [rect(constrictionw, ltail*(1-constrictionr), arccentre[0] + r + gap + .5*(w - constrictionw), arccentre[1] - spacer - ltail*(1-constrictionr))]
                 #fine_shapes += straight_trench(ltail*(1-constrictionr), gap, w, arccentre[0] + r, arccentre[1] -  ltail - 2*w  - spacer, orientation='V')
                 remove += [rect(2*gap + w , ltail + spacer + 2*w , arccentre[0] + r, arccentre[1] -  ltail - 2*w  - spacer)]
-                print '''even number of turns in res cst not well tested '''
+                print('even number of turns in res cst not well tested')
                 # if SQUID == True:
                 #     fine_shapes += straight_trench(squid_loop, (w - squid_loop - 2*constriction)/2., w - (w - squid_loop - 2*constriction), squid_loop, arccentre[0] + r, arccentre[1] -  ltail - 2*w  - spacer + squid_loop, orientation='V')
                 #     fine_shapes += rect(squid_loop, squid_loop, arccentre[0] + r + gap + w/2 - squid_loop/2, arccentre[1] -  ltail - 2*w  - spacer + squid_loop)
@@ -378,11 +378,7 @@ def quarterwave_inverted(w, gap, nturns, lcap, lmeander, r, tail=True, ltail=100
                 #     fine_shapes += straight_trench(squid_loop, (w - squid_loop - 2*constriction)/2., w - (w - squid_loop - 2*constriction), squid_loop, arccentre[0] - r - 2*gap -w, arccentre[1] -  ltail - 2*w  - spacer + squid_loop, orientation='V')
                 #     fine_shapes += rect(squid_loop, squid_loop, arccentre[0] - r - 2*gap -w + gap + w/2 - squid_loop/2, arccentre[1] -  ltail - 2*w  - spacer + squid_loop)
         else:
-            print '''You need to update res_shapes to include this without fine shapes.
-            You can probably hack this by setting the widths of the constriction
-            and the central conductor to being the same. 
-            Past Oscar didn't test this.
-            Sorry.'''
+            print('You need to update res_shapes to include this without fine shapes. You can probably hack this by setting the widths of the constriction and the central conductor to being the same. Past Oscar didnt test this. Sorry.')
             # coarse += quarterarc(r + gap, w, gap, arccentre[0], arccentre[1], orientation=o)
             # if o =='NE':
             #     ail_shapest += straight_trench(ltail, gap, w, arccentre[0] + r, arccentre[1] - ltail, orientation='V')
@@ -491,6 +487,7 @@ def DC_contacts_etch(x0, y0, w, l, bond, gap, contacts=4):
     
 def TRII(w_cap, w_in, l_in, gap):
     shapes = []
+    remove = []
     shapes += [rect(l_in + 2*w_cap + gap, w_cap, 0, 0)]
     shapes += [rect(w_cap, l_in + 3*w_cap - gap - w_in, l_in + 2*w_cap + gap, 0)]
     shapes += [rect(w_cap, l_in + 2*w_cap + gap, 0, w_cap)]
@@ -498,7 +495,10 @@ def TRII(w_cap, w_in, l_in, gap):
     shapes += [rect(w_cap, l_in + 2*w_cap -w_in, l_in + w_cap, w_cap + gap)]
     shapes += [rect(l_in + w_cap - gap, w_cap, w_cap + gap, w_cap +gap)]
     shapes += [rect(w_cap, l_in + 2*w_cap - w_in - 2*gap, w_cap + gap, 2*w_cap +gap)]
-    return shapes
+    remove += [rect(2*l_in+2*w_cap,2*l_in+2*w_cap,-gap,-gap)]
+    L = 2*w_cap + 2*l_in + 2*gap + 3*w_in 
+    H = 2*(2*w_in + gap)
+    return [shapes,shapes,1000,1000]
     
 def gavin_spiral(w, gap, l_straight, l_tot):
     shapes = []
