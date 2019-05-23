@@ -1,10 +1,12 @@
 import os
-os.chdir(r'/home/michael/Documents/group-project--morton/EBL')
+directory = os.path.dirname(os.path.abspath(__file__))
+ebl = os.path.join(directory,'EBL/')
+os.chdir(ebl)
 import res_shapes as rs
 import gdspy
 
 poly_cell = gdspy.Cell('POLYGONS')
-folder = r'/home/michael/Documents/group-project--morton/EBL/gavin_spiral'
+folder = os.path.join(ebl,'gavin_spiral/')
 
 gaps = [10]#, 2]#, 50, 75, 100]
 ccs = [45]#, 5]#, 55]
