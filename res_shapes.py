@@ -487,18 +487,16 @@ def DC_contacts_etch(x0, y0, w, l, bond, gap, contacts=4):
     
 def TRII(w_cap, w_in, l_in, gap):
     shapes = []
-    remove = []
     shapes += [rect(l_in + 2*w_cap + gap, w_cap, 0, 0)]
     shapes += [rect(w_cap, l_in + 3*w_cap - gap - w_in, l_in + 2*w_cap + gap, 0)]
     shapes += [rect(w_cap, l_in + 2*w_cap + gap, 0, w_cap)]
     shapes += [rect(l_in + w_cap, w_in, w_cap, l_in + 3*w_cap- w_in + gap)]
     shapes += [rect(w_cap, l_in + 2*w_cap -w_in, l_in + w_cap, w_cap + gap)]
-    shapes += [rect(l_in + w_cap - gap, w_cap, w_cap + gap, w_cap +gap)]
-    shapes += [rect(w_cap, l_in + 2*w_cap - w_in - 2*gap, w_cap + gap, 2*w_cap +gap)]
-    remove += [rect(2*l_in+2*w_cap,2*l_in+2*w_cap,-gap,-gap)]
-    L = 2*w_cap + 2*l_in + 2*gap + 3*w_in 
-    H = 2*(2*w_in + gap)
-    return [shapes,shapes,1000,1000]
+    shapes += [rect(l_in - gap, w_cap, w_cap + gap, w_cap +gap)]
+    shapes += [rect(w_cap, l_in + w_cap - w_in - 2*gap, w_cap + gap, 2*w_cap +gap)]
+    L = l_in + 2*w_cap + gap + w_cap
+    H = l_in + 3*w_cap- w_in + gap + w_in
+    return [shapes,shapes,L,H]
     
 def gavin_spiral(w, gap, l_straight, l_tot):
     shapes = []
