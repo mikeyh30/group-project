@@ -1,10 +1,12 @@
 import os
-os.chdir(r'/EBL/scripting')
+directory = os.path.dirname(os.path.abspath(__file__))
+ebl = os.path.join(directory,'EBL/')
+os.chdir(ebl)
 import res_shapes as rs
 import gdspy
 
 poly_cell = gdspy.Cell('POLYGONS')
-folder = r'/hw_sims'
+folder = os.path.join(ebl,'hw_sims/')
 
 gaps = [10, 25, 50, 75, 100]
 ccs = [45, 50, 55]
@@ -15,8 +17,8 @@ c_gap = 1
 #resonator - 3 element list [coarse res elements, fine res elements, stuff to remove from ground plane]
 for j in range(len(gaps)*len(ccs)):
     #res
-    poly_cell.elements=[]
-    cc = ccs[j/len(gaps)]
+    #poly_cell.elements=[]
+    cc = ccs[j//len(gaps)]
     gap = gaps[j%len(gaps)]
     res = rs.hw_sim(cc, gap, r, lcap, lstart, c_gap)
     
