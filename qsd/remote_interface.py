@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from qsd.ssh_control import sshcommand
 
-def remote_interface(host,COMSOL_model,paramfile):
-    sshc = sshcommand.SSHCommand(host,model=COMSOL_model,paramfile=paramfile)
+def remote_interface(host,COMSOL_model,paramfile_1):
+    sshc = sshcommand.SSHCommand(host,model=COMSOL_model,paramfile=paramfile_1)
 
     # Securely copy the parameter list to remote machine
     #sshc.scp_params() 
@@ -22,4 +22,4 @@ def remote_interface(host,COMSOL_model,paramfile):
     sshc.get_comsol_data(host)
 
 if __name__ == "__main__":
-    remote_interface('barcelona','cpw_vacuum_calcs.mph','paramlist.txt')
+    remote_interface('monaco','ART_res.mph','paramlist.txt')
