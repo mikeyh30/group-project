@@ -1,3 +1,5 @@
+*.eps
+*.pdf
 .vscode/
 *.gds
 
