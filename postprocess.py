@@ -33,14 +33,21 @@ def make_cumulative(array):
         array[i-1] = array[i-1] + array[i]
     return array
 
+def postprocess(gens_file):
+    gens = np.sqrt(return_COMSOL_table(gens_file))
+    FWHM = 0 #Need to make function which calculates FWHM
+    return gens, FWHM
+
 N = return_COMSOL_table(file_N)
 gens2 = return_COMSOL_table(file_gens2)
-gens = np.sqrt(return_COMSOL_table(file_gens2_number))
+gens, FWHM = postprocess(file_gens2_number)
 print(gens)
 
 y = [i for i in np.arange(0,0.1+0.01,0.01)]
 y.append(0.15)
 y.extend([i for i in np.arange(0.2,2,0.1)])
+
+
 fig0, ax0 = plt.subplots(figsize=(6,4))
 ax0.plot(y,np.sqrt(gens2))
 ax0.set_xlabel('$g_{{0min}}$',fontsize='24')
