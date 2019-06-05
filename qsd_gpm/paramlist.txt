@@ -1,0 +1,14 @@
+w 2e-06[m] width_of_superconductor
+t 5e-08[m] thickness_of_superconductor
+pen 2e-07[m] penetration_depth
+I0 2.0000000400080021e-07[A/m] current_at_x=0
+J0 243902.4439034149[A/m^3] current_density_at_x=0
+N 2
+w_sub 8e-06[m] substrate_width
+h_sub 2.5e-05[m] substrate_height
+pen_perp 3.9999999999999993e-07[m] perpendicular_pen_depth
+C 0.8459416166424711 capacitance
+l1 2e-07[m]
+l2 2.8347999999999994e-07[m]
+J2overJ1 0.7746355381721923
+J1 61270.37479405801[A/m]
