@@ -10,9 +10,9 @@ from qsd.data_processing import readcomsol,postproc
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from scipy import interpolate
 
-file_gens2 = os.getcwd() + '/qsd/downloads/exports/g_ens2.csv'
-file_gens2_number = os.getcwd() + '/qsd/downloads/exports/g_ens2_number.csv'
-file_N = os.getcwd() + '/qsd/downloads/exports/N.csv'
+file_gens2 = os.getcwd() + '/qsd_gpm/downloads/exports/g_ens2.csv'
+file_gens2_number = os.getcwd() + '/qsd_gpm/downloads/exports/g_ens2_number.csv'
+file_N = os.getcwd() + '/qsd_gpm/downloads/exports/N.csv'
 
 def return_COMSOL_table(file):
     x = []

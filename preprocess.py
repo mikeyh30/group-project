@@ -41,11 +41,11 @@ def preprocess(paramfilename):
     # sigma = cpw.conductivity() # Conductivity
 
     # Generate a parameter list for COMSOL modelling
-    paramlist = setp.param_list(x,I,Jnorm,"qsd/paramlist.txt") # Generate COMSOL parameter list
-    paramlistfilename = str(os.getcwd() + "qsd/paramlist.txt")
+    paramlist = setp.param_list(x,I,Jnorm,"qsd_gpm/paramlist.txt") # Generate COMSOL parameter list
+    paramlistfilename = str(os.getcwd() + "/qsd_gpm/paramlist.txt")
 
     # Save data to csv file
-    currentDensityFile = str(os.getcwd() + "/qsd/current_density.csv")
+    currentDensityFile = str(os.getcwd() + "/qsd_gpm/current_density.csv")
     np.savetxt(currentDensityFile, np.column_stack((x,Jnorm)), delimiter=",")
     return currentDensityFile, paramlistfilename
 
