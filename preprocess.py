@@ -24,6 +24,9 @@ def preprocess(paramfilename):
     pen = float(pd["pen"])
     omega = float(pd["omega"])
     Z = float(pd["Z"])
+    w_mesa = float(pd["w_mesa"])
+    h_mesa = float(pd["h_mesa"])
+    gap_ind = float(pd["gap_ind"])
 
     setp = setparams.SetParams()#w,t,l,pen,omega,Z)
     params = setp.set_params(paramfilename)
