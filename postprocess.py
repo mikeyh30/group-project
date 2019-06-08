@@ -68,9 +68,9 @@ def plot_derivative_gens():
     plt.show()
 
 if __name__ == "__main__":
-    file_gens2 = os.getcwd() + '/qsd_gpm/downloads/exports/g_ens2.csv'
-    file_gens2_number = os.getcwd() + '/qsd_gpm/downloads/exports/g_ens2_number.csv'
-    file_N = os.getcwd() + '/qsd_gpm/downloads/exports/N.csv'
+    file_gens2 = os.getcwd() + '/downloads/exports/g_ens2.csv'
+    file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
+    file_N = os.getcwd() + '/downloads/exports/N.csv'
 
     N = return_COMSOL_table(file_N)
     gens2 = return_COMSOL_table(file_gens2)
