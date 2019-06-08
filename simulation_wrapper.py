@@ -5,15 +5,15 @@ import os
 
 def changeparamsfile(paramfile, w, t, l, pen, omega, Z, w_mesa, h_mesa, gap_ind):
     f = open(paramfile,'w')
-    f.write('w = ' + w + '\n'
-        't = ' + t + '\n'
-        'l = ' + l + '\n'
-        'pen = ' + pen + '\n'
-        'omega = ' + omega + '\n'
-        'Z = ' + Z + '\n'
-        'w_mesa = ' + w_mesa + '\n'
-        'h_mesa = ' + h_mesa + '\n'
-        'gap_ind = ' + gap_ind
+    f.write('w = ' + str(w) + '\n'
+        't = ' + str(t) + '\n'
+        'l = ' + str(l) + '\n'
+        'pen = ' + str(pen) + '\n'
+        'omega = ' + str(omega) + '\n'
+        'Z = ' + str(Z) + '\n'
+        'w_mesa = ' + str(w_mesa) + '\n'
+        'h_mesa = ' + str(h_mesa) + '\n'
+        'gap_ind = ' + str(gap_ind)
         )
     f.close()
 
@@ -27,6 +27,7 @@ def simulation_wrapper_noparams(host, COMSOL_model, paramfile):
     #COMSOL simulation
     remote_interface(host, COMSOL_model, paramfile, current_density_file)
     #Postprocess - generate g_ens and pi_fidelity
+    file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
     g_ens, FWHM = postprocess(file_gens2_number)
     
     return (g_ens, FWHM)

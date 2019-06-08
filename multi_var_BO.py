@@ -32,12 +32,44 @@ from emukit.core.loop import SequentialPointCalculator
 from emukit.quadrature.kernels import QuadratureRBF
 from emukit.quadrature.methods import VanillaBayesianQuadrature
 
-f, space = branin_function()
+# COMSOL simulation
+import os
+from simulation_wrapper import simulation_wrapper
 
-param_space = ParameterSpace([ContinuousParameter('x1',0,10),ContinuousParameter('x2',0,15)])
+# Define the input parameters for our function
+host = 'monaco'
+COMSOL_model = 'ART_res.mph'
+paramfile = 'cpw_parameters.txt'
+file_gens2 = os.getcwd() + '/downloads/exports/g_ens2.csv'
+file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
+file_N = os.getcwd() + '/downloads/exports/N.csv'
+w = 2e-06
+t = 50e-09
+# l = 40e-6
+pen = 200e-09
+omega = 7.3e09
+Z = 50
+w_mesa = 4e-07
+h_mesa = 5e-08
+# gap_ind = 1e-06
 
-num_data_points = 30
-design = RandomDesign(param_space)
+# Parameter space
+parameter_space = ParameterSpace([ContinuousParameter('l_ind', 10e-06, 50e-06), ContinuousParameter('gap_ind', 4e-07, 2e-06)])
+
+# Function to optimize
+def f(X):
+    l_ind = X[:, 0]
+    gap_ind = X[:, 1]
+    out = np.zeros((1,len(l_ind)))
+    for g in range(len(l_ind)):
+        out[0,g] = -simulation_wrapper(host, COMSOL_model, paramfile, w, t, l_ind[g], pen, omega, Z, w_mesa, h_mesa, gap_ind[g])[0]
+    return out
+
+#f, space = branin_function()
+
+
+num_data_points = 10
+design = RandomDesign(parameter_space)
 X = design.get_samples(num_data_points)
 Y = f(X)
 """
@@ -57,15 +89,15 @@ model_emukit.model
 plt.show()
 
 exp_imprv = ExpectedImprovement(model = model_emukit)
-optimizer = GradientAcquisitionOptimizer(space = param_space)
+optimizer = GradientAcquisitionOptimizer(space = parameter_space)
 point_calc = SequentialPointCalculator(exp_imprv,optimizer)
 
 bayesopt_loop = BayesianOptimizationLoop(model = model_emukit,
-                                         space = param_space,
+                                         space = parameter_space,
                                          acquisition=exp_imprv,
                                          batch_size=5)
 
-stopping_condition = FixedIterationsStoppingCondition(i_max = 100)
+stopping_condition = FixedIterationsStoppingCondition(i_max = 30)
 bayesopt_loop.run_loop(f, stopping_condition)
 coord_results  = bayesopt_loop.get_results().minimum_location
 min_value = bayesopt_loop.get_results().minimum_value
