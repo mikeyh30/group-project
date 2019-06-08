@@ -1,6 +1,9 @@
 w = 2e-06
 t = 50e-09
-l = 2e-7
+l = 40e-6
 pen = 200e-09
 omega = 7.3e09
 Z = 50
+w_mesa = 4e-07
+h_mesa = 5e-08
+gap_ind = 1e-06

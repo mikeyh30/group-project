@@ -24,6 +24,9 @@ def preprocess(paramfilename):
     pen = float(pd["pen"])
     omega = float(pd["omega"])
     Z = float(pd["Z"])
+    w_mesa = float(pd["w_mesa"])
+    h_mesa = float(pd["h_mesa"])
+    gap_ind = float(pd["gap_ind"])
 
     setp = setparams.SetParams()#w,t,l,pen,omega,Z)
     params = setp.set_params(paramfilename)
@@ -41,11 +44,11 @@ def preprocess(paramfilename):
     # sigma = cpw.conductivity() # Conductivity
 
     # Generate a parameter list for COMSOL modelling
-    paramlist = setp.param_list(x,I,Jnorm,"qsd/paramlist.txt") # Generate COMSOL parameter list
-    paramlistfilename = str(os.getcwd() + "qsd/paramlist.txt")
+    paramlist = setp.param_list(x,I,Jnorm,"qsd_gpm/paramlist.txt") # Generate COMSOL parameter list
+    paramlistfilename = str(os.getcwd() + "/qsd_gpm/paramlist.txt")
 
     # Save data to csv file
-    currentDensityFile = str(os.getcwd() + "/qsd/current_density.csv")
+    currentDensityFile = str(os.getcwd() + "/qsd_gpm/current_density.csv")
     np.savetxt(currentDensityFile, np.column_stack((x,Jnorm)), delimiter=",")
     return currentDensityFile, paramlistfilename
 

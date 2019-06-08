@@ -1,3 +1,5 @@
+legacy/
+*.png
 *.eps
 *.pdf
 .vscode/
