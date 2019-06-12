@@ -45,7 +45,7 @@ def impedance(L,C):
     return Z
 
 def frequency(L,C):
-    f = 1/(2*np.pi*L*C)
+    f = 1/np.sqrt((2*np.pi*L*C))
     return f
 
 def preprocess(paramfilename):
