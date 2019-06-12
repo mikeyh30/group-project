@@ -8,6 +8,7 @@ import numpy as np
 import GPy
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
+import json
 
 # Decision loops
 from emukit.experimental_design.model_based import ExperimentalDesignLoop
@@ -60,9 +61,9 @@ parameter_space = ParameterSpace([ContinuousParameter('l_ind', 10e-06, 50e-06), 
 def f(X):
     l_ind = X[:, 0]
     gap_ind = X[:, 1]
-    out = np.zeros((1,len(l_ind)))
+    out = np.zeros((len(l_ind),1))
     for g in range(len(l_ind)):
-        out[0,g] = -simulation_wrapper(host, COMSOL_model, paramfile, w, t, l_ind[g], pen, omega, Z, w_mesa, h_mesa, gap_ind[g])[0]
+        out[g,0] = -simulation_wrapper(host, COMSOL_model, paramfile, w, t, l_ind[g], pen, omega, Z, w_mesa, h_mesa, gap_ind[g])[0]
     return out
 
 #f, space = branin_function()
@@ -83,11 +84,11 @@ plt.show()
 model_gpy = GPRegression(X,Y)
 model_gpy.optimize()
 model_emukit = GPyModelWrapper(model_gpy)
-
+"""
 model_emukit.model.plot()
 model_emukit.model
 plt.show()
-
+"""
 exp_imprv = ExpectedImprovement(model = model_emukit)
 optimizer = GradientAcquisitionOptimizer(space = parameter_space)
 point_calc = SequentialPointCalculator(exp_imprv,optimizer)
@@ -95,18 +96,45 @@ point_calc = SequentialPointCalculator(exp_imprv,optimizer)
 bayesopt_loop = BayesianOptimizationLoop(model = model_emukit,
                                          space = parameter_space,
                                          acquisition=exp_imprv,
-                                         batch_size=5)
+                                         batch_size=1)
 
 stopping_condition = FixedIterationsStoppingCondition(i_max = 30)
 bayesopt_loop.run_loop(f, stopping_condition)
+
+
 coord_results  = bayesopt_loop.get_results().minimum_location
 min_value = bayesopt_loop.get_results().minimum_value
 step_results = bayesopt_loop.get_results().best_found_value_per_iteration
 print(coord_results)
 print(min_value)
-print(step_results)
-plt.plot(step_results)
+
+results = [coord_results,min_value]
+
+results_file = open('results.txt','w')
+results_file.write(str(results))
+results_file.close()
+
+
+data = model_emukit.model.to_dict()
+with open('model_data.txt','w') as outfile:
+    json.dump(data,outfile)
+
+model_emukit.model.plot(levels=500)
+ax = plt.gca()
+mappable = ax.collections[0]
+plt.colorbar(mappable)
+plt.savefig('model.png')
 plt.show()
+
+# Shelf
+import shelve
+
+filename='/tmp/shelve.out'
+my_shelf = shelve.open(filename,'n') # 'n' for new
+my_shelf['model_emukit'] = globals()['model_emukit']
+# my_shelf['bayesopt_loop']= globals()['bayesopt_loop']
+my_shelf.close()
+
 """
 model_emukit.model.plot()
 model_emukit.model
