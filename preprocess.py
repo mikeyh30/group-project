@@ -17,7 +17,7 @@ def capacitance(s,w,l):
     excuse the horrible parameter names
     """
     v_0 = 299792548
-    e_r = 1
+    e_r = 6
     x = s/(s+2*w)
     if x > 0 and x <= 1/(np.sqrt(2)):
         capacitance = (e_r*l*np.log(((-2)/((1-x**2)**(1/4)-1))*((1-x**2)**(1/4)+1)))/(377*np.pi*v_0)
@@ -45,7 +45,7 @@ def impedance(L,C):
     return Z
 
 def frequency(L,C):
-    f = 1/np.sqrt((2*np.pi*L*C))
+    f = 1/(2*np.pi*np.sqrt(L*C))
     return f
 
 def preprocess(paramfilename):
@@ -71,7 +71,7 @@ def preprocess(paramfilename):
     w_mesa = float(pd["w_mesa"])
     h_mesa = float(pd["h_mesa"])
     gap_ind = float(pd["gap_ind"])
-    L = inductance(l,w,gap_ind,t,0.001)
+    L = inductance(l,w,gap_ind,t,1)
     C = capacitance(gap_cap, w_cap, l_cap)
     Z = impedance(L,C)
 

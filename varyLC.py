@@ -37,53 +37,40 @@ from emukit.quadrature.methods import VanillaBayesianQuadrature
 import os
 from simulation_wrapper import simulation_wrapper
 
-# Define the input parameters for our function
-host = 'monaco'
-COMSOL_model = 'ART_res.mph'
-paramfile = 'cpw_parameters.txt'
-file_gens2 = os.getcwd() + '/downloads/exports/g_ens2.csv'
-file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
-file_N = os.getcwd() + '/downloads/exports/N.csv'
-#w = 2.4e-06
-t = 45e-09
-# l = 240e-6
-pen = 200e-09
-omega = 7.03e09
-gap_cap = 60e-06
-# w_cap = 45e-06
-l_cap = 2500e-06
-w_mesa = 4e-07
-h_mesa = 45e-09
-# gap_ind = 2.4e-06
-
-# Parameter space
-# parameter_space = ParameterSpace([ContinuousParameter('l_ind', 10e-06, 50e-06), ContinuousParameter('gap_ind', 4e-07, 2e-06)])
 parameter_space = ParameterSpace([\
-    ContinuousParameter('l_ind', 230e-06, 500e-06), \
-    ContinuousParameter('gap_ind', 2e-06, 7e-06),\
-    ContinuousParameter('w', 0.8e-06, 4e-06), \
-    # ContinuousParameter('t', 25e-09, 75e-09),
-    ContinuousParameter('w_cap', 30e-06, 60e-06),\
-    # ContinuousParameter('l_cap', 150e-06, 750e-06)
+    ContinuousParameter('L', 1e-11, 4e-11), \
+    ContinuousParameter('C', 1e-11, 4e-11),\
     ])
+
+def frequency(L,C):
+    f = 1/(2*np.pi*np.sqrt(L*C))
+    return f
+
+def within_frequency_bounds(frequency, clock_transition, leeway):
+    return (frequency > (clock_transition-leeway)) and (frequency < (clock_transition+leeway))
+
+def dist_from_clock(frequency, clock_transition):
+    distance = abs(frequency-clock_transition)
+    return distance
 
 # Function to optimize
 def q(X):
-    l_ind = X[:, 0]
-    gap_ind = X[:, 1]
-    w = X[:,2]
-    # t = X[:,3]
-    w_cap = X[:,3]
-    # l_cap = X[:,5]
-    out = np.zeros((len(l_ind),1))
-    for g in range(len(l_ind)):
-        out[g,0] = -simulation_wrapper(host, COMSOL_model, paramfile, w[g], t, l_ind[g], pen, omega, gap_cap, w_cap[g], l_cap, w_mesa, h_mesa, gap_ind[g])[0]
+    L = X[:, 0]
+    C = X[:, 1]
+    out = np.zeros((len(L),1))
+    for g in range(len(L)):
+        if not within_frequency_bounds(frequency(L[g],C[g]), 7.03e09, 100e6):
+            out[g,0] = dist_from_clock(frequency(L[g],C[g]), 7.03e09) # Negative as want to optimize against this
+        else:
+            out[g,0] = 0
     return out
+
+
 
 #f, space = branin_function()
 
 
-num_data_points = 50
+num_data_points = 30
 design = RandomDesign(parameter_space)
 X = design.get_samples(num_data_points)
 Y = q(X)
@@ -112,7 +99,7 @@ bayesopt_loop = BayesianOptimizationLoop(model = model_emukit,
                                          acquisition=exp_imprv,
                                          batch_size=1)
 
-stopping_condition = FixedIterationsStoppingCondition(i_max = 500)
+stopping_condition = FixedIterationsStoppingCondition(i_max = 120)
 bayesopt_loop.run_loop(q, stopping_condition)
 
 
@@ -133,7 +120,7 @@ data = model_emukit.model.to_dict()
 with open('model_data.txt','w') as outfile:
     json.dump(data,outfile)
 
-model_emukit.model.plot(levels=500,visible_dims=[1,2])
+model_emukit.model.plot(levels=50,visible_dims=[0,1])
 ax = plt.gca()
 mappable = ax.collections[0]
 plt.colorbar(mappable)
