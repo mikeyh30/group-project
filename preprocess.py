@@ -37,7 +37,7 @@ def inductance(l_ind, w_ind, gap_ind, h_ind, m_r):
     h = gap_ind+2*w_ind
     d = 2*w_ind+2*h_ind
     temp = -h*np.log((h+np.sqrt(h**2+w**2))/w)-w*np.log((w+np.sqrt(h**2+w**2))/h)+h*np.log(4*h/d)+w*np.log(4*w/d)
-    L = (m_o*m_r/np.pi)*(-2*(w+h)+2*np.sqrt(h**2+w**2)+temp)
+    L = (m_0*m_r/np.pi)*(-2*(w+h)+2*np.sqrt(h**2+w**2)+temp)
     return L
 
 def impedance(L,C):
@@ -71,10 +71,9 @@ def preprocess(paramfilename):
     w_mesa = float(pd["w_mesa"])
     h_mesa = float(pd["h_mesa"])
     gap_ind = float(pd["gap_ind"])
-    inductance =inductance(l,w,gap_ind,t,0.001)
-    capacitance=capacitance(gap_cap, w_cap, l_cap)
-    Z = impedance(inductance,capacitance)
-    print(Z)
+    L = inductance(l,w,gap_ind,t,0.001)
+    C = capacitance(gap_cap, w_cap, l_cap)
+    Z = impedance(L,C)
 
     setp = setparams.SetParams()#w,t,l,pen,omega,Z)
     params = setp.set_params(paramfilename)
@@ -98,7 +97,7 @@ def preprocess(paramfilename):
     # Save data to csv file
     currentDensityFile = str(os.getcwd() + "/qsd_gpm/current_density.csv")
     np.savetxt(currentDensityFile, np.column_stack((x,Jnorm)), delimiter=",")
-    return currentDensityFile, paramlistfilename, frequency(inductance,capacitance)
+    return currentDensityFile, paramlistfilename, frequency(L,C)
 
 if __name__ == "__main__":
     preprocess("cpw_parameters.txt")

@@ -44,32 +44,46 @@ paramfile = 'cpw_parameters.txt'
 file_gens2 = os.getcwd() + '/downloads/exports/g_ens2.csv'
 file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
 file_N = os.getcwd() + '/downloads/exports/N.csv'
-w = 2e-06
+#w = 2e-06
 t = 50e-09
 # l = 40e-6
 pen = 200e-09
 omega = 7.3e09
-Z = 50
+gap_cap = 10e-06
+w_cap = 100e-06
+l_cap = 750e-06
 w_mesa = 4e-07
 h_mesa = 5e-08
 # gap_ind = 1e-06
 
 # Parameter space
-parameter_space = ParameterSpace([ContinuousParameter('l_ind', 10e-06, 50e-06), ContinuousParameter('gap_ind', 4e-07, 2e-06)])
+# parameter_space = ParameterSpace([ContinuousParameter('l_ind', 10e-06, 50e-06), ContinuousParameter('gap_ind', 4e-07, 2e-06)])
+parameter_space = ParameterSpace([\
+    ContinuousParameter('l_ind', 10e-06, 60e-06), \
+    ContinuousParameter('gap_ind', 4e-07, 2e-06),\
+    ContinuousParameter('w', 1e-06, 5e-06), \
+    # ContinuousParameter('t', 25e-09, 75e-09),
+    ContinuousParameter('w_cap', 10e-06, 100e-06),\
+    # ContinuousParameter('l_cap', 150e-06, 750e-06)
+    ])
 
 # Function to optimize
 def f(X):
     l_ind = X[:, 0]
     gap_ind = X[:, 1]
+    w = X[:,2]
+    # t = X[:,3]
+    w_cap = X[:,3]
+    # l_cap = X[:,5]
     out = np.zeros((len(l_ind),1))
     for g in range(len(l_ind)):
-        out[g,0] = -simulation_wrapper(host, COMSOL_model, paramfile, w, t, l_ind[g], pen, omega, Z, w_mesa, h_mesa, gap_ind[g])[0]
+        out[g,0] = -simulation_wrapper(host, COMSOL_model, paramfile, w[g], t, l_ind[g], pen, omega, gap_cap, w_cap[g], l_cap, w_mesa, h_mesa, gap_ind[g])[0]
     return out
 
 #f, space = branin_function()
 
 
-num_data_points = 10
+num_data_points = 50
 design = RandomDesign(parameter_space)
 X = design.get_samples(num_data_points)
 Y = f(X)
@@ -98,7 +112,7 @@ bayesopt_loop = BayesianOptimizationLoop(model = model_emukit,
                                          acquisition=exp_imprv,
                                          batch_size=1)
 
-stopping_condition = FixedIterationsStoppingCondition(i_max = 30)
+stopping_condition = FixedIterationsStoppingCondition(i_max = 50)
 bayesopt_loop.run_loop(f, stopping_condition)
 
 
@@ -119,7 +133,7 @@ data = model_emukit.model.to_dict()
 with open('model_data.txt','w') as outfile:
     json.dump(data,outfile)
 
-model_emukit.model.plot(levels=500)
+model_emukit.model.plot(levels=500,visible_dims=[1,2])
 ax = plt.gca()
 mappable = ax.collections[0]
 plt.colorbar(mappable)
