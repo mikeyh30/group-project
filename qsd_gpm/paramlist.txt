@@ -1,18 +1,18 @@
-w_ind 2e-06[m] width_of_inductor
-h_ind 5e-08[m] thickness_of_inductor
-l_ind 4e-05[m] length_of_inductor
+w_ind 4.805577941931244e-06[m] width_of_inductor
+h_ind 4.5e-08[m] thickness_of_inductor
+l_ind 0.009848814925163811[m] length_of_inductor
 pen 2e-07[m] penetration_depth
-I0 4.000000080016005e-05[A/m] current_at_x=0
-J0 48780488.780682996[A/m^3] current_density_at_x=0
+I0 0.009848815122179515[A/m] current_at_x=0
+J0 5076103940.646213[A/m^3] current_density_at_x=0
 N 2
-w_sub 8e-06[m] substrate_width
+w_sub 1.9222311767724975e-05[m] substrate_width
 h_sub 2.5e-05[m] substrate_height
-pen_perp 3.9999999999999993e-07[m] perpendicular_pen_depth
-C 0.8459416166424711 capacitance
-l1 2e-07[m]
-l2 2.8347999999999994e-07[m]
-J2overJ1 0.7746355381721923
-J1 61270.37479405801[A/m]
+pen_perp 4.444444444444444e-07[m] perpendicular_pen_depth
+C 1.1296650513219861 capacitance
+l1 1.8973665961010278e-07[m]
+l2 2.9863777777777775e-07[m]
+J2overJ1 1.0864600590444475
+J1 19178.102787820004[A/m]
 w_mesa 4e-07[m]
-h_mesa 5e-08[m]
-gap_ind 1e-06[m]
+h_mesa 4.5e-08[m]
+gap_ind 5.908687632149798e-07[m]
