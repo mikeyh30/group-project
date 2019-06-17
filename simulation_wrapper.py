@@ -34,13 +34,12 @@ def simulation_wrapper_noparams(host, COMSOL_model, paramfile):
     if not within_frequency_bounds(frequency, 7.03e09, 100e6):
         return (-dist_from_clock(frequency, 7.03e09),0) # Negative as want to optimize against this
     else:
-        return 0
-        # #COMSOL simulation
-        # remote_interface(host, COMSOL_model, paramfile, current_density_file)
-        # #Postprocess - generate g_ens and pi_fidelity
-        # file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
-        # g_ens, FWHM = postprocess(file_gens2_number)
-        # return (g_ens, FWHM)
+        #COMSOL simulation
+        remote_interface(host, COMSOL_model, paramfile, current_density_file)
+        #Postprocess - generate g_ens and pi_fidelity
+        file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
+        g_ens, FWHM = postprocess(file_gens2_number)
+        return (g_ens, FWHM)
 
 def simulation_wrapper(host, COMSOL_model, paramfile, w, t, l, pen, omega, gap_cap, w_cap, l_cap, w_mesa, h_mesa, gap_ind):
     changeparamsfile(paramfile, w, t, l, pen, omega, gap_cap, w_cap, l_cap, w_mesa, h_mesa, gap_ind)
