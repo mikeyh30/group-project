@@ -37,113 +37,112 @@ from emukit.quadrature.methods import VanillaBayesianQuadrature
 import os
 from simulation_wrapper import simulation_wrapper
 
+# Define the input parameters for our functions
+host = 'monaco'
+COMSOL_model = 'ART_res.mph'
+paramfile = 'cpw_parameters.txt'
+file_gens2 = os.getcwd() + '/downloads/exports/g_ens2.csv'
+file_gens2_number = os.getcwd() + '/downloads/exports/g_ens2_number.csv'
+file_N = os.getcwd() + '/downloads/exports/N.csv'
+#w = 2.4e-06
+t = 45e-09
+# l = 240e-6
+# gap_ind = 2.4e-06
+pen = 200e-09
+omega = 7.03e09
+# gap_cap = 60e-06
+# w_cap = 45e-06
+# l_cap = 2500e-06
+w_mesa = 4e-07
+h_mesa = 45e-09
+
+# Number of simulation runs
+no_random_seeds = 50
+no_BO_sims = 500
+
+# Parameter space
 parameter_space = ParameterSpace([\
-    ContinuousParameter('L', 1e-11, 4e-11), \
-    ContinuousParameter('C', 1e-11, 4e-11),\
+    ContinuousParameter('gap_cap', 1e-06, 1e-04), \
+    ContinuousParameter('w_cap', 1e-06, 1e-04),\
+    ContinuousParameter('l_cap', 1e-04, 1e-02), \
+    ContinuousParameter('l_ind', 1e-04, 1e-02),
+    ContinuousParameter('w', 1e-08, 1e-05),\
+    ContinuousParameter('gap_ind', 1e-08, 1e-06),\
     ])
-
-def frequency(L,C):
-    f = 1/(2*np.pi*np.sqrt(L*C))
-    return f
-
-def within_frequency_bounds(frequency, clock_transition, leeway):
-    return (frequency > (clock_transition-leeway)) and (frequency < (clock_transition+leeway))
-
-def dist_from_clock(frequency, clock_transition):
-    distance = abs(frequency-clock_transition)
-    return distance
 
 # Function to optimize
 def q(X):
-    L = X[:, 0]
-    C = X[:, 1]
-    out = np.zeros((len(L),1))
-    for g in range(len(L)):
-        if not within_frequency_bounds(frequency(L[g],C[g]), 7.03e09, 100e6):
-            out[g,0] = dist_from_clock(frequency(L[g],C[g]), 7.03e09) # Negative as want to optimize against this
+    gap_cap = X[:,0]
+    w_cap = X[:,1]
+    l_cap = X[:,2]
+    l_ind = X[:,3]
+    w = X[:,4]
+    gap_ind = X[:,5]
+    out = np.zeros((len(l_ind),1))
+    for g in range(len(l_ind)):
+        # Check that resonator geometry is sensible:
+        if l_ind[g] > l_cap[g]/2:
+            out[g,0] = 10e20 #Large cost to bad geometry
         else:
-            out[g,0] = 0
+            out[g,0] = -simulation_wrapper(host, COMSOL_model, paramfile, w[g], t, l_ind[g], pen, omega, gap_cap[g], w_cap[g], l_cap[g], w_mesa, h_mesa, gap_ind[g])[0]
     return out
 
-
-
-#f, space = branin_function()
-
-
-num_data_points = 30
+# Set up random seeding of parameter space
+num_data_points = no_random_seeds
 design = RandomDesign(parameter_space)
 X = design.get_samples(num_data_points)
 Y = q(X)
-"""
-num_data_points = 1000
-design = RandomDesign(param_space)
-X = design.get_samples(num_data_points)
-Y = f(X)
-plt.plot(X,Y)
-plt.show()
-"""
+
+# Set up emukit model
 model_gpy = GPRegression(X,Y)
 model_gpy.optimize()
 model_emukit = GPyModelWrapper(model_gpy)
-"""
-model_emukit.model.plot()
-model_emukit.model
-plt.show()
-"""
+
+# Set up Bayesian optimisation routine
 exp_imprv = ExpectedImprovement(model = model_emukit)
 optimizer = GradientAcquisitionOptimizer(space = parameter_space)
 point_calc = SequentialPointCalculator(exp_imprv,optimizer)
 
+# Bayesian optimisation routine
 bayesopt_loop = BayesianOptimizationLoop(model = model_emukit,
                                          space = parameter_space,
                                          acquisition=exp_imprv,
                                          batch_size=1)
 
-stopping_condition = FixedIterationsStoppingCondition(i_max = 120)
+stopping_condition = FixedIterationsStoppingCondition(i_max = no_BO_sims)
 bayesopt_loop.run_loop(q, stopping_condition)
 
 
+# Results of Bayesian optimisation
 coord_results  = bayesopt_loop.get_results().minimum_location
 min_value = bayesopt_loop.get_results().minimum_value
 step_results = bayesopt_loop.get_results().best_found_value_per_iteration
 print(coord_results)
 print(min_value)
 
+# Save the pararmeters of the best resonator
 results = [coord_results,min_value]
-
 results_file = open('results.txt','w')
 results_file.write(str(results))
 results_file.close()
 
-
+# Save the entire results of the model
 data = model_emukit.model.to_dict()
 with open('model_data.txt','w') as outfile:
     json.dump(data,outfile)
 
-model_emukit.model.plot(levels=50,visible_dims=[0,1])
+# Plotting
+model_emukit.model.plot(levels=500,visible_dims=[1,2])
 ax = plt.gca()
 mappable = ax.collections[0]
 plt.colorbar(mappable)
 plt.savefig('model.png')
 plt.show()
 
-# Shelf
+# Shelve - Can import the model easily using the retrieve_model.py file
 import shelve
-
 filename='/tmp/shelve.out'
 my_shelf = shelve.open(filename,'n') # 'n' for new
 my_shelf['model_emukit'] = globals()['model_emukit']
 # my_shelf['bayesopt_loop']= globals()['bayesopt_loop']
 my_shelf.close()
-
-"""
-model_emukit.model.plot()
-model_emukit.model
-plt.show()
-print(point_calc)
-a = bayesopt_loop.loop_state.X
-print(f(a))
-plt.scatter(a[:,0],f(a))
-plt.show()
-print(model_emukit.model)
-"""
