@@ -8,12 +8,12 @@ function def_host {
 }
 
 function gen_ssh_file {
-	def_host $1 monaco
- 	def_host $1 cork 
-	def_host $1 verona
-	def_host $1 barcelona
-	def_host $1 vienna
-	def_host $1 lyon
+	def_host $1 monaco $2
+ 	def_host $1 cork $2
+	def_host $1 verona $2
+	def_host $1 barcelona $2
+	def_host $1 vienna $2
+	def_host $1 lyon $2
 	echo Host *
 	echo -e \tIdentityFile ~/.ssh/id_rsa
         echo -e \tAddKeysToAgent yes
@@ -22,6 +22,6 @@ function gen_ssh_file {
 
 sudo apt install ssh
 cd ~/.ssh
-gen_ssh_file $1 >> ~/.ssh/config
+gen_ssh_file $1 $2 >> ~/.ssh/config
 ssh-keygen -t rsa
 cat ~/.ssh/id_rsa.pub | ssh $1@monaco.$2 'cat >> .ssh/authorized_keys'
