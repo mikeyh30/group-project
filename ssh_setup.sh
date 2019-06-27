@@ -2,9 +2,9 @@
 
 function def_host {
 	echo Host $2
-        echo -e \tUser $1
-        echo -e \tHostname $2.$3
-        echo -e \tProxyCommand ssh -W $2.$3 $1@$2.$3
+    echo -e '\tUser '$1
+    echo -e '\tHostname '$2.$3
+    echo -e '\tProxyCommand ssh -W '$2.$3:22 $1@$2.$3
 }
 
 function gen_ssh_file {
@@ -14,10 +14,10 @@ function gen_ssh_file {
 	def_host $1 barcelona $2
 	def_host $1 vienna $2
 	def_host $1 lyon $2
-	echo Host *
-	echo -e \tIdentityFile ~/.ssh/id_rsa
-        echo -e \tAddKeysToAgent yes
-        echo -e \tForwardAgent yes
+	echo Host '*'
+	echo -e '\tIdentityFile ~/.ssh/id_rsa'
+    echo -e '\tAddKeysToAgent yes'
+    echo -e '\tForwardAgent yes'
 }
 
 sudo apt install ssh
